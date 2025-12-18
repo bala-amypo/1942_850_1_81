@@ -3,8 +3,6 @@ package com.example.demo.entity;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-import org.apache.catalina.User;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 
