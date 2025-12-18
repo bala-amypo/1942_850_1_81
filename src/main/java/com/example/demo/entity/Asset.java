@@ -78,4 +78,8 @@ private String status;
 private User currentHolder;
 private LocalDateTime createdAt;
 
+public Asset(){
+
+}
+
 }
