@@ -8,8 +8,8 @@ import jakarta.persistence.Id;
 
 @Entity
 public class Asset {
+    @
 private Long id;
-@Id
 private String assetTag;
 public Long getId() {
     return id;
