@@ -1,11 +1,37 @@
-package com.example.demo.service;
+package com.example.demo.service.impl;
 
 import com.example.demo.entity.Asset;
+import com.example.demo.exception.ResourceNotFoundException;
+import com.example.demo.repository.AssetRepository;
+import com.example.demo.service.AssetService;
+import org.springframework.stereotype.Service;
 import java.util.List;
 
-public interface AssetService {
-    Asset createAsset(Asset asset);
-    Asset getAsset(Long id);
-    List<Asset> getAllAssets();
-    Asset updateStatus(Long id, String status);
+@Service
+public class AssetServiceImpl implements AssetService {
+
+    private final AssetRepository assetRepository;
+
+    public AssetServiceImpl(AssetRepository assetRepository) {
+        this.assetRepository = assetRepository;
+    }
+
+    public Asset createAsset(Asset asset) {
+        return assetRepository.save(asset);
+    }
+
+    public Asset getAsset(Long id) {
+        return assetRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Asset not found"));
+    }
+
+    public List<Asset> getAllAssets() {
+        return assetRepository.findAll();
+    }
+
+    public Asset updateStatus(Long id, String status) {
+        Asset asset = getAsset(id);
+        asset.setStatus(status);
+        return assetRepository.save(asset);
+    }
 }
