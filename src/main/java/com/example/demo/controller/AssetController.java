@@ -1,38 +1,25 @@
-package com.example.demo.controller;
-
-import com.example.demo.entity.Asset;
-import com.example.demo.service.AssetService;
-import org.springframework.web.bind.annotation.*;
-import java.util.List;
-
 @RestController
-@RequestMapping("/api/assets")
+@RequestMapping("/assets")
 public class AssetController {
 
-    private final AssetService assetService;
+    private final AssetService service;
 
-    public AssetController(AssetService assetService) {
-        this.assetService = assetService;
+    public AssetController(AssetService service) {
+        this.service = service;
     }
 
     @PostMapping
     public Asset create(@RequestBody Asset asset) {
-        return assetService.createAsset(asset);
+        return service.createAsset(asset);
     }
 
     @GetMapping
     public List<Asset> getAll() {
-        return assetService.getAllAssets();
+        return service.getAllAssets();
     }
 
     @GetMapping("/{id}")
     public Asset get(@PathVariable Long id) {
-        return assetService.getAsset(id);
-    }
-
-    @PutMapping("/status/{id}")
-    public Asset updateStatus(@PathVariable Long id,
-                              @RequestParam String status) {
-        return assetService.updateStatus(id, status);
+        return service.getAsset(id);
     }
 }
