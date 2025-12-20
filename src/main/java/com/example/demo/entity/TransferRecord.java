@@ -3,63 +3,29 @@ package com.example.demo.entity;
 import java.time.LocalDate;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class TransferRecord {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    public Long getId() {
-        return id;
-    }
-    public void setId(Long id) {
-        this.id = id;
-    }
-    public Asset getAsset() {
-        return asset;
-    }
-    public void setAsset(Asset asset) {
-        this.asset = asset;
-    }
-    public String getFromDepartment() {
-        return fromDepartment;
-    }
-    public void setFromDepartment(String fromDepartment) {
-        this.fromDepartment = fromDepartment;
-    }
-    public String getToDepartment() {
-        return toDepartment;
-    }
-    public void setToDepartment(String toDepartment) {
-        this.toDepartment = toDepartment;
-    }
-    public LocalDate getTransferDate() {
-        return transferDate;
-    }
-    public void setTransferDate(LocalDate transferDate) {
-        this.transferDate = transferDate;
-    }
-    public User getApprovedBy() {
-        return approvedBy;
-    }
-    public void setApprovedBy(User approvedBy) {
-        this.approvedBy = approvedBy;
-    }
     private Asset asset;
-    public TransferRecord(Asset asset, String fromDepartment, String toDepartment, LocalDate transferDate,
-            User approvedBy) {
-        this.asset = asset;
-        this.fromDepartment = fromDepartment;
-        this.toDepartment = toDepartment;
-        this.transferDate = transferDate;
-        this.approvedBy = approvedBy;
-    }
     private String fromDepartment;
     private String toDepartment;
     private LocalDate transferDate;
+    @ManyToOne
+    @JoinColumn(name = "approved_by")
     private User approvedBy;
 
-    public TransferRecord(){
-        
-    }
 }
