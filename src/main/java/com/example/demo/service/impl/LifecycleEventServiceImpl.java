@@ -3,6 +3,8 @@ package com.example.demo.service.impl;
 import com.example.demo.entity.Asset;
 import com.example.demo.entity.LifecycleEvent;
 import com.example.demo.entity.User;
+import com.example.demo.exception.ResourceNotFoundException;
+import com.example.demo.exception.ValidationException;
 import com.example.demo.repository.AssetRepository;
 import com.example.demo.repository.LifecycleEventRepository;
 import com.example.demo.repository.UserRepository;
@@ -14,31 +16,48 @@ import java.util.List;
 @Service
 public class LifecycleEventServiceImpl implements LifecycleEventService {
 
-    private final LifecycleEventRepository lifecycleEventRepository;
-    private final AssetRepository assetRepository;
-    private final UserRepository userRepository;
+    private final LifecycleEventRepository lifecycleRepo;
+    private final AssetRepository assetRepo;
+    private final UserRepository userRepo;
 
     public LifecycleEventServiceImpl(
-            LifecycleEventRepository lifecycleEventRepository,
-            AssetRepository assetRepository,
-            UserRepository userRepository) {
+            LifecycleEventRepository lifecycleRepo,
+            AssetRepository assetRepo,
+            UserRepository userRepo) {
 
-        this.lifecycleEventRepository = lifecycleEventRepository;
-        this.assetRepository = assetRepository;
-        this.userRepository = userRepository;
+        this.lifecycleRepo = lifecycleRepo;
+        this.assetRepo = assetRepo;
+        this.userRepo = userRepo;
     }
 
+    @Override
     public LifecycleEvent logEvent(Long assetId, Long userId, LifecycleEvent event) {
-        Asset asset = assetRepository.findById(assetId).orElse(null);
-        User user = userRepository.findById(userId).orElse(null);
+
+        Asset asset = assetRepo.findById(assetId)
+                .orElseThrow(() -> new ResourceNotFoundException("Asset not found"));
+
+        User user = userRepo.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+        if (event.getEventType() == null || event.getEventType().isEmpty()) {
+            throw new ValidationException("Event type is required");
+        }
 
         event.setAsset(asset);
         event.setPerformedBy(user);
 
-        return lifecycleEventRepository.save(event);
+        return lifecycleRepo.save(event);
     }
 
+    @Override
     public List<LifecycleEvent> getEventsForAsset(Long assetId) {
-        return lifecycleEventRepository.findByAssetId(assetId);
+        return lifecycleRepo.findByAssetId(assetId);
+    }
+
+    @Override
+    public LifecycleEvent getEvent(Long id) {
+        return lifecycleRepo.findById(id)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Lifecycle event not found"));
     }
 }
