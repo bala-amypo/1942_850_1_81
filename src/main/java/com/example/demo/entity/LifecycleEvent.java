@@ -6,11 +6,10 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
-
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class LifecycleEvent {
 
     @Id
@@ -22,7 +21,6 @@ public class LifecycleEvent {
 
     private String eventType;
     private String eventDescription;
-
     private LocalDateTime eventDate;
 
     @ManyToOne

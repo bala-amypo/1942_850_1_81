@@ -7,5 +7,4 @@ public interface AssetService {
     Asset createAsset(Asset asset);
     Asset getAsset(Long id);
     List<Asset> getAllAssets();
-    Asset updateStatus(Long id, String status);
 }
