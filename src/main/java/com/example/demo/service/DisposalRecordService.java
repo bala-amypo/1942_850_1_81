@@ -4,7 +4,6 @@ import com.example.demo.entity.DisposalRecord;
 import java.util.List;
 
 public interface DisposalRecordService {
-    DisposalRecord createDisposal(Long assetId, DisposalRecord record);
-    DisposalRecord getDisposal(Long id);
+    DisposalRecord createDisposal(Long assetId, DisposalRecord disposal);
     List<DisposalRecord> getAllDisposals();
 }
