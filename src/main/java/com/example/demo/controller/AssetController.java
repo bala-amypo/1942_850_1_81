@@ -16,6 +16,7 @@ public class AssetController {
         this.assetService = assetService;
     }
 
+  
     @PostMapping
     public Asset createAsset(@RequestBody Asset asset) {
         return assetService.createAsset(asset);
@@ -26,8 +27,18 @@ public class AssetController {
         return assetService.getAllAssets();
     }
 
+    
     @GetMapping("/{id}")
     public Asset getAsset(@PathVariable Long id) {
         return assetService.getAsset(id);
+    }
+
+   
+    @PutMapping("/status/{id}")
+    public Asset updateAssetStatus(
+            @PathVariable Long id,
+            @RequestParam String status) {
+
+        return assetService.updateStatus(id, status);
     }
 }

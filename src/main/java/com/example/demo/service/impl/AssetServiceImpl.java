@@ -23,14 +23,21 @@ public class AssetServiceImpl implements AssetService {
     }
 
     @Override
-    public Asset getAsset(Long id) {
-        return assetRepository.findById(id)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException("Asset not found with id: " + id));
+    public List<Asset> getAllAssets() {
+        return assetRepository.findAll();
     }
 
     @Override
-    public List<Asset> getAllAssets() {
-        return assetRepository.findAll();
+    public Asset getAsset(Long id) {
+        return assetRepository.findById(id)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Asset not found with id " + id));
+    }
+
+    @Override
+    public Asset updateStatus(Long id, String status) {
+        Asset asset = getAsset(id);
+        asset.setStatus(status);
+        return assetRepository.save(asset);
     }
 }
