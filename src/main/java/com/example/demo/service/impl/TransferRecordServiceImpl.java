@@ -17,12 +17,12 @@ public class TransferRecordServiceImpl implements TransferRecordService {
 
     private final TransferRecordRepository transferRepo;
     private final AssetRepository assetRepo;
-    private final UserRepository userRepo;   // ✅ ADD
+    private final UserRepository userRepo;   
 
     public TransferRecordServiceImpl(
             TransferRecordRepository transferRepo,
             AssetRepository assetRepo,
-            UserRepository userRepo) {        // ✅ ADD
+            UserRepository userRepo) {        
         this.transferRepo = transferRepo;
         this.assetRepo = assetRepo;
         this.userRepo = userRepo;
