@@ -31,21 +31,24 @@ public class DisposalRecordServiceImpl implements DisposalRecordService {
     @Override
     public DisposalRecord createDisposal(Long assetId, DisposalRecord disposal) {
 
-       
-        Asset asset = assetRepo.findById(assetId)
-                .orElseThrow(() -> new ResourceNotFoundException("Asset not found"));
 
-    
-        User approver = userRepo.findById(
-                disposal.getApprovedBy().getId()
-        ).orElseThrow(() -> new ResourceNotFoundException("Approver not found"));
+    Asset asset = assetRepo.findById(assetId)
+            .orElseThrow(() ->
+                    new ResourceNotFoundException("Asset not found"));
 
-    
-        disposal.setAsset(asset);
-        disposal.setApprovedBy(approver);
 
-       
-        return disposalRepo.save(disposal);
+    if ("DISPOSED".equalsIgnoreCase(asset.getStatus())) {
+        throw new ValidationException("Asset is already disposed");
+    }
+
+  
+    asset.setStatus("DISPOSED");
+    asset.setCurrentHolder(null);
+    assetRepo.save(asset);
+
+  
+    disposal.setAsset(asset);
+    return disposalRepo.save(disposal);
     }
 
     @Override
