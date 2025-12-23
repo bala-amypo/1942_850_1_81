@@ -44,7 +44,6 @@ public class TransferRecordServiceImpl implements TransferRecordService {
         asset.setStatus("ASSIGNED");  
         assetRepo.save(asset);
 
-        // 4️⃣ Save transfer record
         record.setAsset(asset);
         return transferRepo.save(record);
     }
