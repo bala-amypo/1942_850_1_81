@@ -27,7 +27,7 @@ public class AssetServiceImpl implements AssetService {
     @Override
     public Asset createAsset(Asset asset) {
 
-        
+        // Fetch full currentHolder if present
         if (asset.getCurrentHolder() != null &&
             asset.getCurrentHolder().getId() != null) {
 
@@ -55,28 +55,12 @@ public class AssetServiceImpl implements AssetService {
                         new ResourceNotFoundException("Asset not found"));
     }
 
+   
     @Override
-    public Asset updateAsset(Long id, Asset asset) {
+    public Asset updateStatus(Long id, String status) {
 
-        Asset existing = getAsset(id);
-
-        existing.setAssetTag(asset.getAssetTag());
-        existing.setAssetType(asset.getAssetType());
-        existing.setModel(asset.getModel());
-        existing.setPurchaseDate(asset.getPurchaseDate());
-
-      
-        if (asset.getCurrentHolder() != null &&
-            asset.getCurrentHolder().getId() != null) {
-
-            User holder = userRepository.findById(
-                    asset.getCurrentHolder().getId()
-            ).orElseThrow(() ->
-                    new ResourceNotFoundException("User not found"));
-
-            existing.setCurrentHolder(holder);
-        }
-
-        return assetRepository.save(existing);
+        Asset asset = getAsset(id);
+        asset.setStatus(status);
+        return assetRepository.save(asset);
     }
 }
