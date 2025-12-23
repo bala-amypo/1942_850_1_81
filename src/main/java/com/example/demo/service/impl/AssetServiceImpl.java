@@ -14,10 +14,12 @@ import java.util.List;
 public class AssetServiceImpl implements AssetService {
 
     private final AssetRepository assetRepository;
-    private final UserRepository userRepository;  
+    private final UserRepository userRepository;
 
-    public AssetServiceImpl(AssetRepository assetRepository,
-                            UserRepository userRepository) {   
+    public AssetServiceImpl(
+            AssetRepository assetRepository,
+            UserRepository userRepository) {
+
         this.assetRepository = assetRepository;
         this.userRepository = userRepository;
     }
@@ -25,7 +27,7 @@ public class AssetServiceImpl implements AssetService {
     @Override
     public Asset createAsset(Asset asset) {
 
-      
+        
         if (asset.getCurrentHolder() != null &&
             asset.getCurrentHolder().getId() != null) {
 
@@ -37,6 +39,7 @@ public class AssetServiceImpl implements AssetService {
             asset.setCurrentHolder(holder);
         }
 
+        asset.setStatus("AVAILABLE");
         return assetRepository.save(asset);
     }
 
@@ -49,13 +52,31 @@ public class AssetServiceImpl implements AssetService {
     public Asset getAsset(Long id) {
         return assetRepository.findById(id)
                 .orElseThrow(() ->
-                        new ResourceNotFoundException("Asset not found with id " + id));
+                        new ResourceNotFoundException("Asset not found"));
     }
 
     @Override
-    public Asset updateStatus(Long id, String status) {
-        Asset asset = getAsset(id);
-        asset.setStatus(status);
-        return assetRepository.save(asset);
+    public Asset updateAsset(Long id, Asset asset) {
+
+        Asset existing = getAsset(id);
+
+        existing.setAssetTag(asset.getAssetTag());
+        existing.setAssetType(asset.getAssetType());
+        existing.setModel(asset.getModel());
+        existing.setPurchaseDate(asset.getPurchaseDate());
+
+      
+        if (asset.getCurrentHolder() != null &&
+            asset.getCurrentHolder().getId() != null) {
+
+            User holder = userRepository.findById(
+                    asset.getCurrentHolder().getId()
+            ).orElseThrow(() ->
+                    new ResourceNotFoundException("User not found"));
+
+            existing.setCurrentHolder(holder);
+        }
+
+        return assetRepository.save(existing);
     }
 }
