@@ -17,12 +17,13 @@ public class TransferRecordServiceImpl implements TransferRecordService {
 
     private final TransferRecordRepository transferRepo;
     private final AssetRepository assetRepo;
-    private final UserRepository userRepo;   
+    private final UserRepository userRepo;
 
     public TransferRecordServiceImpl(
             TransferRecordRepository transferRepo,
             AssetRepository assetRepo,
-            UserRepository userRepo) {        
+            UserRepository userRepo) {
+
         this.transferRepo = transferRepo;
         this.assetRepo = assetRepo;
         this.userRepo = userRepo;
@@ -31,20 +32,22 @@ public class TransferRecordServiceImpl implements TransferRecordService {
     @Override
     public TransferRecord createTransfer(Long assetId, TransferRecord record) {
 
-       
         Asset asset = assetRepo.findById(assetId)
-                .orElseThrow(() -> new ResourceNotFoundException("Asset not found"));
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Asset not found"));
 
-        User newHolder = userRepo.findById(
-                record.getToUser().getId()
+        User approver = userRepo.findById(
+                record.getApprovedBy().getId()
         ).orElseThrow(() ->
                 new ResourceNotFoundException("User not found"));
 
-        asset.setCurrentHolder(newHolder);
-        asset.setStatus("ASSIGNED");  
+        asset.setCurrentHolder(approver);
+        asset.setStatus("ASSIGNED");
         assetRepo.save(asset);
 
         record.setAsset(asset);
+        record.setApprovedBy(approver);
+
         return transferRepo.save(record);
     }
 
