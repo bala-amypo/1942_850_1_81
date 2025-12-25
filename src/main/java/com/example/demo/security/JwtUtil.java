@@ -14,14 +14,12 @@ public class JwtUtil {
     private static final String SECRET_KEY = "secret123";
     private static final long EXPIRATION_TIME = 60 * 60 * 1000;
 
-    public String generateTokenForUser(User user) {
-        return generateToken(user.getId(), user.getEmail(), user.getRole());
-    }
+    public String generateToken(Long userId, String email, String role, String department) {
 
-    public String generateToken(Long userId, String email, String role) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("userId", userId);
         claims.put("role", role);
+        claims.put("department", department);
 
         return Jwts.builder()
                 .setClaims(claims)
@@ -32,27 +30,35 @@ public class JwtUtil {
                 .compact();
     }
 
-    public Claims parseToken(String token) {
+    public String generateTokenForUser(User user) {
+        return generateToken(
+                user.getId(),
+                user.getEmail(),
+                user.getRole(),
+                user.getDepartment()
+        );
+    }
+
+    public Jwt<?, Claims> parseToken(String token) {
         return Jwts.parser()
                 .setSigningKey(SECRET_KEY)
-                .parseClaimsJws(token)
-                .getBody();
+                .parse(token);
     }
 
     public String extractUsername(String token) {
-        return parseToken(token).getSubject();
-    }
-
-    public String extractRole(String token) {
-        return parseToken(token).get("role", String.class);
+        return parseToken(token).getBody().getSubject();
     }
 
     public Long extractUserId(String token) {
-        return parseToken(token).get("userId", Long.class);
+        return parseToken(token).getBody().get("userId", Long.class);
+    }
+
+    public String extractRole(String token) {
+        return parseToken(token).getBody().get("role", String.class);
     }
 
     public boolean isTokenValid(String token, String email) {
         return extractUsername(token).equals(email)
-                && !parseToken(token).getExpiration().before(new Date());
+                && !parseToken(token).getBody().getExpiration().before(new Date());
     }
 }
