@@ -14,41 +14,27 @@ public class JwtUtil {
     private static final String SECRET_KEY = "secret123";
     private static final long EXPIRATION_TIME = 60 * 60 * 1000;
 
-    // ====== REQUIRED BY TESTS ======
+    // ===== REQUIRED BY TESTS =====
     public String generateToken(Map<String, Object> claims, String subject) {
-        return generateToken(
-                claims,
-                subject,
-                new Date(),
-                new Date(System.currentTimeMillis() + EXPIRATION_TIME)
-        );
-    }
-
-    // ====== USED INTERNALLY ======
-    public String generateToken(
-            Map<String, Object> claims,
-            String subject,
-            Date issuedAt,
-            Date expiration
-    ) {
         return Jwts.builder()
                 .setClaims(claims)
                 .setSubject(subject)
-                .setIssuedAt(issuedAt)
-                .setExpiration(expiration)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
                 .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
                 .compact();
     }
 
-    // ====== USED BY SERVICES ======
+    // ===== USED BY SERVICES =====
     public String generateToken(Long userId, String email, String role, String department) {
 
         Map<String, Object> claims = new HashMap<>();
         claims.put("userId", userId);
-        claims.put("role", role);
+        claims.put("email", email);      // 🔥 REQUIRED
+        claims.put("role", role);        // 🔥 REQUIRED
         claims.put("department", department);
 
-        return generateToken(claims, email);
+        return generateToken(claims, email); // subject = email
     }
 
     public String generateTokenForUser(User user) {
@@ -59,14 +45,13 @@ public class JwtUtil {
                 user.getDepartment()
         );
     }
-
-    // ====== TOKEN PARSING ======
     public TokenWrapper parseToken(String token) {
-        Jws<Claims> jws = Jwts.parser()
+        Claims claims = Jwts.parser()
                 .setSigningKey(SECRET_KEY)
-                .parseClaimsJws(token);
+                .parseClaimsJws(token)
+                .getBody();
 
-        return new TokenWrapper(jws.getBody());
+        return new TokenWrapper(claims);
     }
 
     public String extractUsername(String token) {
@@ -82,14 +67,11 @@ public class JwtUtil {
     }
 
     public boolean isTokenValid(String token, String email) {
-        return extractUsername(token).equals(email)
-                && !parseToken(token)
-                .getPayload()
-                .getExpiration()
-                .before(new Date());
+        Claims claims = parseToken(token).getPayload();
+        return claims.getSubject().equals(email)
+                && claims.getExpiration().after(new Date());
     }
 
-    // ====== REQUIRED BY TESTS (getPayload) ======
     public static class TokenWrapper {
         private final Claims payload;
 
