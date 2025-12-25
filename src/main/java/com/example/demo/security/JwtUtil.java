@@ -12,16 +12,12 @@ import java.util.Map;
 @Component
 public class JwtUtil {
 
-    // ================= CONSTANTS =================
     private static final String SECRET =
             "this_is_a_very_secure_secret_key_which_is_32_chars";
-    private static final long EXPIRATION_TIME = 1000 * 60 * 60; // 1 hour
+    private static final long EXPIRATION_TIME = 1000 * 60 * 60; 
 
     private final Key key = Keys.hmacShaKeyFor(SECRET.getBytes());
 
-    // =====================================================
-    // REQUIRED BY TEST CASES – METHOD 1
-    // =====================================================
     public String generateToken(Long userId,
                                 String email,
                                 String role,
@@ -44,9 +40,6 @@ public class JwtUtil {
                 .compact();
     }
 
-    // =====================================================
-    // REQUIRED BY TEST CASES – METHOD 2 (OVERLOADED)
-    // =====================================================
     public String generateToken(Map<String, String> claims, String subject) {
 
         Map<String, Object> finalClaims = new HashMap<>();
@@ -63,15 +56,12 @@ public class JwtUtil {
                 .compact();
     }
 
-    // =====================================================
-    // TOKEN PARSING
-    // =====================================================
     public Claims parseToken(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(key)
                 .build()
                 .parseClaimsJws(token)
-                .getBody();   // ✅ correct (NOT getPayload)
+                .getBody(); 
     }
 
     public Long extractUserId(String token) {
