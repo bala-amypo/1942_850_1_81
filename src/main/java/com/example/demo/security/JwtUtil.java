@@ -14,26 +14,18 @@ public class JwtUtil {
     private static final String SECRET_KEY = "secret123";
     private static final long EXPIRATION_TIME = 60 * 60 * 1000; 
 
-    public String generateToken(Map<String, Object> claims, String subject) {
-        return generateToken(
-                claims,
-                subject,
-                new Date(),
-                new Date(System.currentTimeMillis() + EXPIRATION_TIME)
-        );
-    }
-
 
     public String generateToken(Long userId, String email, String role, String department) {
 
         Map<String, Object> claims = new HashMap<>();
         claims.put("userId", userId);
+        claims.put("email", email);    
         claims.put("role", role);
         claims.put("department", department);
 
         return generateToken(
                 claims,
-                email,
+                email, 
                 new Date(),
                 new Date(System.currentTimeMillis() + EXPIRATION_TIME)
         );
@@ -63,6 +55,7 @@ public class JwtUtil {
         );
     }
 
+
     public TokenWrapper parseToken(String token) {
         Jws<Claims> jws = Jwts.parser()
                 .setSigningKey(SECRET_KEY)
@@ -84,12 +77,15 @@ public class JwtUtil {
         return parseToken(token).getPayload().get("role", String.class);
     }
 
+    public String extractEmail(String token) {
+        return parseToken(token).getPayload().get("email", String.class);
+    }
+
+
     public boolean isTokenValid(String token, String email) {
-        return extractUsername(token).equals(email)
-                && !parseToken(token)
-                .getPayload()
-                .getExpiration()
-                .before(new Date());
+        Claims claims = parseToken(token).getPayload();
+        return claims.getSubject().equals(email)
+                && !claims.getExpiration().before(new Date());
     }
 
 
