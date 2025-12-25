@@ -53,7 +53,7 @@ public class TransferRecordServiceImpl implements TransferRecordService {
 
     @Override
     public List<TransferRecord> getTransfersForAsset(Long assetId) {
-        return transferRepo.findByAssetId(assetId);
+        return transferRepo.findByAsset_Id(assetId);
     }
 
     @Override
