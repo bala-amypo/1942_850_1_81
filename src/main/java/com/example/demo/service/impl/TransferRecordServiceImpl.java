@@ -4,12 +4,14 @@ import com.example.demo.entity.Asset;
 import com.example.demo.entity.TransferRecord;
 import com.example.demo.entity.User;
 import com.example.demo.exception.ResourceNotFoundException;
+import com.example.demo.exception.ValidationException;
 import com.example.demo.repository.AssetRepository;
 import com.example.demo.repository.TransferRecordRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.service.TransferRecordService;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -32,6 +34,11 @@ public class TransferRecordServiceImpl implements TransferRecordService {
     @Override
     public TransferRecord createTransfer(Long assetId, TransferRecord record) {
 
+        if (record.getTransferDate() != null &&
+                record.getTransferDate().after(new Date())) {
+            throw new ValidationException("Transfer date cannot be in the future");
+        }
+
         Asset asset = assetRepo.findById(assetId)
                 .orElseThrow(() ->
                         new ResourceNotFoundException("Asset not found"));
@@ -40,6 +47,10 @@ public class TransferRecordServiceImpl implements TransferRecordService {
                 record.getApprovedBy().getId()
         ).orElseThrow(() ->
                 new ResourceNotFoundException("User not found"));
+
+        if (!"ADMIN".equalsIgnoreCase(approver.getRole())) {
+            throw new ValidationException("Only admin can approve transfer");
+        }
 
         asset.setCurrentHolder(approver);
         asset.setStatus("ASSIGNED");
