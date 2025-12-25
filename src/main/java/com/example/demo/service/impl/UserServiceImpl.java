@@ -8,7 +8,6 @@ import com.example.demo.service.UserService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -22,8 +21,6 @@ public class UserServiceImpl implements UserService {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
     }
-
-    // ================= REGISTER USER =================
     @Override
     public User registerUser(User user) {
 
@@ -35,18 +32,15 @@ public class UserServiceImpl implements UserService {
             throw new ValidationException("Department is required");
         }
 
-        if (userRepository.findByEmail(user.getEmail()).isPresent()) {
+        if (userRepository.existsByEmail(user.getEmail())) {
             throw new ValidationException("Email already exists");
         }
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        user.setRole(user.getRole() == null ? "USER" : user.getRole());
-        user.setCreatedAt(LocalDateTime.now());
 
         return userRepository.save(user);
     }
 
-    // ================= GET USER BY ID =================
     @Override
     public User getUser(Long id) {
         return userRepository.findById(id)
@@ -54,7 +48,6 @@ public class UserServiceImpl implements UserService {
                         new ResourceNotFoundException("User not found"));
     }
 
-    // ================= GET ALL USERS =================
     @Override
     public List<User> getAllUsers() {
         return userRepository.findAll();
