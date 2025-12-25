@@ -2,11 +2,13 @@ package com.example.demo.service.impl;
 
 import com.example.demo.entity.User;
 import com.example.demo.exception.ResourceNotFoundException;
+import com.example.demo.exception.ValidationException;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.service.UserService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -21,28 +23,30 @@ public class UserServiceImpl implements UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
+    // ================= REGISTER USER =================
     @Override
     public User registerUser(User user) {
 
-        // duplicate email check
-        if (userRepository.findByEmail(user.getEmail()).isPresent()) {
-            throw new RuntimeException("Email already exists");
+        if (user.getPassword() == null || user.getPassword().length() < 8) {
+            throw new ValidationException("Password must be at least 8 characters");
         }
 
-        // password validation
-        if (user.getPassword() == null || user.getPassword().length() < 6) {
-            throw new RuntimeException("Password too short");
+        if (user.getDepartment() == null || user.getDepartment().trim().isEmpty()) {
+            throw new ValidationException("Department is required");
+        }
+
+        if (userRepository.findByEmail(user.getEmail()).isPresent()) {
+            throw new ValidationException("Email already exists");
         }
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-
-        if (user.getRole() == null) {
-            user.setRole("USER");
-        }
+        user.setRole(user.getRole() == null ? "USER" : user.getRole());
+        user.setCreatedAt(LocalDateTime.now());
 
         return userRepository.save(user);
     }
 
+    // ================= GET USER BY ID =================
     @Override
     public User getUser(Long id) {
         return userRepository.findById(id)
@@ -50,6 +54,7 @@ public class UserServiceImpl implements UserService {
                         new ResourceNotFoundException("User not found"));
     }
 
+    // ================= GET ALL USERS =================
     @Override
     public List<User> getAllUsers() {
         return userRepository.findAll();
