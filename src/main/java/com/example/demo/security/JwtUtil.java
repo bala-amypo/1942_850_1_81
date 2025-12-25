@@ -14,7 +14,7 @@ public class JwtUtil {
     private static final String SECRET_KEY = "secret123";
     private static final long EXPIRATION_TIME = 60 * 60 * 1000;
 
-    // ===== REQUIRED BY TESTS =====
+
     public String generateToken(Map<String, Object> claims, String subject) {
         return Jwts.builder()
                 .setClaims(claims)
@@ -25,16 +25,15 @@ public class JwtUtil {
                 .compact();
     }
 
-    // ===== USED BY SERVICES =====
     public String generateToken(Long userId, String email, String role, String department) {
 
         Map<String, Object> claims = new HashMap<>();
         claims.put("userId", userId);
-        claims.put("email", email);      // 🔥 REQUIRED
-        claims.put("role", role);        // 🔥 REQUIRED
+        claims.put("email", email);    
+        claims.put("role", role);     
         claims.put("department", department);
 
-        return generateToken(claims, email); // subject = email
+        return generateToken(claims, email); 
     }
 
     public String generateTokenForUser(User user) {
