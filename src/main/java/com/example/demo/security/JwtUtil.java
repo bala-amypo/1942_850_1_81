@@ -21,11 +21,25 @@ public class JwtUtil {
         claims.put("role", role);
         claims.put("department", department);
 
+        return generateToken(
+                claims,
+                email,
+                new Date(),
+                new Date(System.currentTimeMillis() + EXPIRATION_TIME)
+        );
+    }
+
+    public String generateToken(
+            Map<String, Object> claims,
+            String subject,
+            Date issuedAt,
+            Date expiration
+    ) {
         return Jwts.builder()
                 .setClaims(claims)
-                .setSubject(email)
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
+                .setSubject(subject)
+                .setIssuedAt(issuedAt)
+                .setExpiration(expiration)
                 .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
                 .compact();
     }
@@ -39,28 +53,43 @@ public class JwtUtil {
         );
     }
 
-    public Jws<Claims> parseToken(String token) {
-        return Jwts.parser()
+    public TokenWrapper parseToken(String token) {
+        Jws<Claims> jws = Jwts.parser()
                 .setSigningKey(SECRET_KEY)
                 .parseClaimsJws(token);
+
+        return new TokenWrapper(jws.getBody());
     }
 
     public String extractUsername(String token) {
-        return parseToken(token).getBody().getSubject();
+        return parseToken(token).getPayload().getSubject();
     }
 
     public Long extractUserId(String token) {
-        return parseToken(token).getBody().get("userId", Long.class);
+        return parseToken(token).getPayload().get("userId", Long.class);
     }
 
     public String extractRole(String token) {
-        return parseToken(token).getBody().get("role", String.class);
+        return parseToken(token).getPayload().get("role", String.class);
     }
 
     public boolean isTokenValid(String token, String email) {
         return extractUsername(token).equals(email)
-                && !parseToken(token).getBody()
+                && !parseToken(token)
+                .getPayload()
                 .getExpiration()
                 .before(new Date());
+    }
+
+    public static class TokenWrapper {
+        private final Claims payload;
+
+        public TokenWrapper(Claims payload) {
+            this.payload = payload;
+        }
+
+        public Claims getPayload() {
+            return payload;
+        }
     }
 }
