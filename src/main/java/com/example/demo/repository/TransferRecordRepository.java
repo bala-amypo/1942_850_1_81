@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface TransferRecordRepository extends JpaRepository<TransferRecord, Long> {
 
-    List<TransferRecord> findByAsset_Id(Long assetId);
+    List<TransferRecord> findByAssetId(Long assetId);
 }
