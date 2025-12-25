@@ -14,13 +14,10 @@ public class JwtUtil {
 
     private static final String SECRET =
             "this_is_a_very_secure_secret_key_which_is_32_chars";
-    private static final long EXPIRATION_TIME = 1000 * 60 * 60; // 1 hour
+    private static final long EXPIRATION_TIME = 1000 * 60 * 60; 
 
     private final Key key = Keys.hmacShaKeyFor(SECRET.getBytes());
 
-    // =====================================================
-    // TOKEN GENERATION (TEST REQUIRED)
-    // =====================================================
     public String generateToken(Long userId,
                                 String email,
                                 String role,
@@ -44,6 +41,7 @@ public class JwtUtil {
     }
 
     public String generateToken(Map<String, String> claims, String subject) {
+
         Map<String, Object> finalClaims = new HashMap<>();
         finalClaims.putAll(claims);
 
@@ -58,27 +56,14 @@ public class JwtUtil {
                 .compact();
     }
 
-    // =====================================================
-    // TOKEN PARSING
-    // =====================================================
     public Claims parseToken(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(key)
                 .build()
                 .parseClaimsJws(token)
-                .getBody();   // ✅ correct method
+                .getBody(); 
     }
 
-    // =====================================================
-    // 🔥 REQUIRED FOR JwtAuthenticationFilter
-    // =====================================================
-    public String extractUsername(String token) {
-        return parseToken(token).getSubject();
-    }
-
-    // =====================================================
-    // CLAIM EXTRACTION (TEST REQUIRED)
-    // =====================================================
     public Long extractUserId(String token) {
         return parseToken(token).get("userId", Long.class);
     }
@@ -95,9 +80,6 @@ public class JwtUtil {
         return parseToken(token).get("department", String.class);
     }
 
-    // =====================================================
-    // VALIDATION
-    // =====================================================
     public boolean isTokenValid(String token) {
         try {
             parseToken(token);
