@@ -12,9 +12,8 @@ import java.util.Map;
 public class JwtUtil {
 
     private static final String SECRET_KEY = "secret123";
-    private static final long EXPIRATION_TIME = 60 * 60 * 1000;
+    private static final long EXPIRATION_TIME = 60 * 60 * 1000; 
 
-    // ====== REQUIRED BY TESTS ======
     public String generateToken(Map<String, Object> claims, String subject) {
         return generateToken(
                 claims,
@@ -24,7 +23,27 @@ public class JwtUtil {
         );
     }
 
-    // ====== USED INTERNALLY ======
+
+    public String generateToken(
+            Long userId,
+            String email,
+            String role,
+            String department
+    ) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("userId", userId);
+        claims.put("email", email);        
+        claims.put("role", role);
+        claims.put("department", department);
+
+        return generateToken(
+                claims,
+                email, 
+                new Date(),
+                new Date(System.currentTimeMillis() + EXPIRATION_TIME)
+        );
+    }
+
     public String generateToken(
             Map<String, Object> claims,
             String subject,
@@ -40,17 +59,6 @@ public class JwtUtil {
                 .compact();
     }
 
-    // ====== USED BY SERVICES ======
-    public String generateToken(Long userId, String email, String role, String department) {
-
-        Map<String, Object> claims = new HashMap<>();
-        claims.put("userId", userId);
-        claims.put("role", role);
-        claims.put("department", department);
-
-        return generateToken(claims, email);
-    }
-
     public String generateTokenForUser(User user) {
         return generateToken(
                 user.getId(),
@@ -60,7 +68,7 @@ public class JwtUtil {
         );
     }
 
-    // ====== TOKEN PARSING ======
+
     public TokenWrapper parseToken(String token) {
         Jws<Claims> jws = Jwts.parser()
                 .setSigningKey(SECRET_KEY)
@@ -68,6 +76,7 @@ public class JwtUtil {
 
         return new TokenWrapper(jws.getBody());
     }
+
 
     public String extractUsername(String token) {
         return parseToken(token).getPayload().getSubject();
@@ -82,14 +91,12 @@ public class JwtUtil {
     }
 
     public boolean isTokenValid(String token, String email) {
-        return extractUsername(token).equals(email)
-                && !parseToken(token)
-                .getPayload()
-                .getExpiration()
-                .before(new Date());
+        Claims payload = parseToken(token).getPayload();
+        return payload.getSubject().equals(email)
+                && !payload.getExpiration().before(new Date());
     }
 
-    // ====== REQUIRED BY TESTS (getPayload) ======
+
     public static class TokenWrapper {
         private final Claims payload;
 
