@@ -11,7 +11,7 @@ import com.example.demo.repository.UserRepository;
 import com.example.demo.service.TransferRecordService;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -35,7 +35,7 @@ public class TransferRecordServiceImpl implements TransferRecordService {
     public TransferRecord createTransfer(Long assetId, TransferRecord record) {
 
         if (record.getTransferDate() != null &&
-                record.getTransferDate().after(new Date())) {
+                record.getTransferDate().isAfter(LocalDate.now())) {
             throw new ValidationException("Transfer date cannot be in the future");
         }
 
