@@ -24,6 +24,7 @@ public class UserServiceImpl implements UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
+    // ================= REGISTER =================
     @Override
     public User register(RegisterRequest request) {
 
@@ -50,6 +51,15 @@ public class UserServiceImpl implements UserService {
         return userRepository.save(user);
     }
 
+    // ================= GET USER BY ID =================
+    @Override
+    public User getUser(Long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("User not found"));
+    }
+
+    // ================= GET USER BY EMAIL =================
     @Override
     public User getByEmail(String email) {
         return userRepository.findByEmail(email)
@@ -57,6 +67,7 @@ public class UserServiceImpl implements UserService {
                         new ResourceNotFoundException("User not found"));
     }
 
+    // ================= GET ALL USERS =================
     @Override
     public List<User> getAllUsers() {
         return userRepository.findAll();
