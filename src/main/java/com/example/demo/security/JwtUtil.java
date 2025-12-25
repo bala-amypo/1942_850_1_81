@@ -12,7 +12,17 @@ import java.util.Map;
 public class JwtUtil {
 
     private static final String SECRET_KEY = "secret123";
-    private static final long EXPIRATION_TIME = 60 * 60 * 1000;
+    private static final long EXPIRATION_TIME = 60 * 60 * 1000; 
+
+    public String generateToken(Map<String, Object> claims, String subject) {
+        return generateToken(
+                claims,
+                subject,
+                new Date(),
+                new Date(System.currentTimeMillis() + EXPIRATION_TIME)
+        );
+    }
+
 
     public String generateToken(Long userId, String email, String role, String department) {
 
@@ -61,6 +71,7 @@ public class JwtUtil {
         return new TokenWrapper(jws.getBody());
     }
 
+
     public String extractUsername(String token) {
         return parseToken(token).getPayload().getSubject();
     }
@@ -80,6 +91,7 @@ public class JwtUtil {
                 .getExpiration()
                 .before(new Date());
     }
+
 
     public static class TokenWrapper {
         private final Claims payload;
