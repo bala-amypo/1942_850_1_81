@@ -50,16 +50,16 @@ public class JwtUtil {
     }
 
     public Long extractUserId(String token) {
-        return parseToken(token).getPayload().get("userId", Long.class);
+        return parseToken(token).getBody().get("userId", Long.class);
     }
 
     public String extractRole(String token) {
-        return parseToken(token).getPayload().get("role", String.class);
+        return parseToken(token).getBody().get("role", String.class);
     }
 
     public boolean isTokenValid(String token, String email) {
         return extractUsername(token).equals(email)
-                && !parseToken(token).getPayload()
+                && !parseToken(token).getBody()
                 .getExpiration()
                 .before(new Date());
     }
