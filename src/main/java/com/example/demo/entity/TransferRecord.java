@@ -1,25 +1,12 @@
 package com.example.demo.entity;
 
+import jakarta.persistence.*;
 import java.time.LocalDate;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 @Entity
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-
 public class TransferRecord {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue
     private Long id;
 
     @ManyToOne
@@ -31,4 +18,19 @@ public class TransferRecord {
 
     @ManyToOne
     private User approvedBy;
+
+    public TransferRecord() {}
+
+    public TransferRecord(Long id, Asset asset, String fromDepartment,
+                          String toDepartment, LocalDate transferDate,
+                          User approvedBy) {
+        this.id = id;
+        this.asset = asset;
+        this.fromDepartment = fromDepartment;
+        this.toDepartment = toDepartment;
+        this.transferDate = transferDate;
+        this.approvedBy = approvedBy;
+    }
+
+    // getters & setters
 }

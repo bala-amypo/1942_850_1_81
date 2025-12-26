@@ -1,34 +1,15 @@
 package com.example.demo.entity;
 
+import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.PrePersist;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
-
 @Entity
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
+public class Asset {
 
-public class Asset {  
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue
     private Long id;
-
-    @Column(unique = true)
     private String assetTag;
-
     private String assetType;
     private String model;
     private LocalDate purchaseDate;
@@ -39,9 +20,26 @@ public class Asset {
 
     private LocalDateTime createdAt;
 
+    public Asset() {}
+
+    public Asset(Long id, String assetTag, String assetType, String model,
+                 LocalDate purchaseDate, String status,
+                 User currentHolder, LocalDateTime createdAt) {
+        this.id = id;
+        this.assetTag = assetTag;
+        this.assetType = assetType;
+        this.model = model;
+        this.purchaseDate = purchaseDate;
+        this.status = status;
+        this.currentHolder = currentHolder;
+        this.createdAt = createdAt;
+    }
+
     @PrePersist
     public void prePersist() {
         if (status == null) status = "AVAILABLE";
         if (createdAt == null) createdAt = LocalDateTime.now();
     }
+
+    // getters & setters
 }
