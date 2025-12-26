@@ -26,16 +26,19 @@ public class UserServiceImpl implements UserService {
     @Override
     public User registerUser(User user) {
 
-        if (userRepository.findByEmail(user.getEmail()).isPresent()) {
-            throw new ValidationException("Email already exists");
-        }
-
         if (user.getPassword() == null || user.getPassword().length() < 8) {
             throw new ValidationException("Password must be at least 8 characters");
         }
 
+        if (user.getDepartment() == null || user.getDepartment().trim().isEmpty()) {
+            throw new ValidationException("Department is required");
+        }
+
+        if (userRepository.existsByEmail(user.getEmail())) {
+            throw new ValidationException("Email already exists");
+        }
+
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        user.setCreatedAt(LocalDateTime.now());
 
         return userRepository.save(user);
     }
