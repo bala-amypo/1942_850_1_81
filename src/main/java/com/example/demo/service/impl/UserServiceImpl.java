@@ -41,14 +41,8 @@ public class UserServiceImpl implements UserService {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setCreatedAt(LocalDateTime.now());
 
-        // 🔐 DEFAULT ROLE
-        if (user.getRole() == null) {
-            user.setRole("USER");
-        }
-
         return userRepository.save(user);
     }
-
     @Override
     public User getUser(Long id) {
         return userRepository.findById(id)
@@ -59,19 +53,5 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<User> getAllUsers() {
         return userRepository.findAll();
-    }
-
-    public User updateUserRole(Long userId, String role) {
-
-        User user = userRepository.findById(userId)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException("User not found"));
-
-        if (!role.equalsIgnoreCase("ADMIN") && !role.equalsIgnoreCase("USER")) {
-            throw new ValidationException("Invalid role");
-        }
-
-        user.setRole(role.toUpperCase());
-        return userRepository.save(user);
     }
 }
