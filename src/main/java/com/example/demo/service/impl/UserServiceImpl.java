@@ -7,9 +7,8 @@ import com.example.demo.repository.UserRepository;
 import com.example.demo.service.UserService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
 import java.time.LocalDateTime;
-
-
 import java.util.List;
 
 @Service
@@ -23,25 +22,26 @@ public class UserServiceImpl implements UserService {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
     }
+
+    // ================= REGISTER USER =================
     @Override
-public User registerUser(User user) {
+    public User registerUser(User user) {
 
- 
-    if (userRepository.findByEmail(user.getEmail()).isPresent()) {
-        throw new ValidationException("Email already exists");
+        // ✅ t11: DUPLICATE EMAIL VALIDATION
+        if (userRepository.findByEmail(user.getEmail()).isPresent()) {
+            throw new ValidationException("Email already exists");
+        }
+
+        // ✅ PASSWORD VALIDATION
+        if (user.getPassword() == null || user.getPassword().length() < 8) {
+            throw new ValidationException("Password must be at least 8 characters");
+        }
+
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setCreatedAt(LocalDateTime.now());
+
+        return userRepository.save(user);
     }
-
-  
-    if (user.getPassword() == null || user.getPassword().length() < 8) {
-        throw new ValidationException("Password must be at least 8 characters");
-    }
-
-    user.setPassword(passwordEncoder.encode(user.getPassword()));
-    user.setCreatedAt(LocalDateTime.now());
-
-    return userRepository.save(user);
-}
-
 
     @Override
     public User getUser(Long id) {
