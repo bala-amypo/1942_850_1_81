@@ -30,7 +30,7 @@ public class User {
 
     @PrePersist
     public void prePersist() {
-        if (role == null) role = "ADMIN";
+        if (role == null) role = "USER";
         if (createdAt == null) createdAt = LocalDateTime.now();
     }
 }
