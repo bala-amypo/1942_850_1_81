@@ -6,24 +6,29 @@ import com.example.demo.entity.User;
 import com.example.demo.security.JwtUtil;
 import com.example.demo.service.UserService;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/auth")
 @Tag(name = "Authentication")
 public class AuthController {
 
+    private final AuthenticationManager authenticationManager;
     private final UserService userService;
     private final JwtUtil jwtUtil;
 
-    public AuthController(UserService userService, JwtUtil jwtUtil) {
+    public AuthController(AuthenticationManager authenticationManager,
+                          UserService userService,
+                          JwtUtil jwtUtil) {
+        this.authenticationManager = authenticationManager;
         this.userService = userService;
         this.jwtUtil = jwtUtil;
     }
 
-    // POST /auth/register
     @PostMapping("/register")
     public User register(@RequestBody RegisterRequest request) {
         User user = new User();
@@ -34,13 +39,18 @@ public class AuthController {
         return userService.registerUser(user);
     }
 
-    // POST /auth/login
     @PostMapping("/login")
     public Map<String, String> login(@RequestBody LoginRequest request) {
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        request.getEmail(), request.getPassword()
+                )
+        );
+
         User user = userService.getAllUsers().stream()
                 .filter(u -> u.getEmail().equals(request.getEmail()))
                 .findFirst()
-                .orElseThrow(() -> new RuntimeException("Invalid credentials"));
+                .orElseThrow();
 
         String token = jwtUtil.generateTokenForUser(user);
         return Map.of("token", token);
