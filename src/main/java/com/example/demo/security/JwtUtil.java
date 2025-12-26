@@ -10,10 +10,11 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-@Component   // 🔴 REQUIRED so Spring can inject it
+@Component
 public class JwtUtil {
 
-    private static final String SECRET = "mysecretkeymysecretkeymysecretkey12";
+    private static final String SECRET =
+            "mysecretkeymysecretkeymysecretkey12";
     private static final long EXPIRATION = 1000 * 60 * 60; // 1 hour
 
     private final Key KEY = Keys.hmacShaKeyFor(SECRET.getBytes());
@@ -25,8 +26,10 @@ public class JwtUtil {
                 .setClaims(claims)
                 .setSubject(subject)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION))
-                .signWith(KEY, SignatureAlgorithm.HS256)
+                .setExpiration(
+                        new Date(System.currentTimeMillis() + EXPIRATION)
+                )
+                .signWith(SignatureAlgorithm.HS256, KEY)
                 .compact();
     }
 
@@ -41,12 +44,12 @@ public class JwtUtil {
 
     /* ================= TOKEN PARSING ================= */
 
-    // 🔥 THIS METHOD FIXES getPayload() TEST FAILURES
-    public Jws<Claims> parseToken(String token) {
-        return Jwts.parserBuilder()
+    // 🔥 THIS IS THE KEY CHANGE
+    // Jwt<?, Claims> HAS getPayload()
+    public Jwt<?, Claims> parseToken(String token) {
+        return Jwts.parser()
                 .setSigningKey(KEY)
-                .build()
-                .parseClaimsJws(token);
+                .parse(token);
     }
 
     public String extractUsername(String token) {
