@@ -22,24 +22,24 @@ public class UserServiceImpl implements UserService {
         this.passwordEncoder = passwordEncoder;
     }
     @Override
-    public User registerUser(User user) {
+public User registerUser(User user) {
 
-        if (user.getPassword() == null || user.getPassword().length() < 8) {
-            throw new ValidationException("Password must be at least 8 characters");
-        }
-
-        if (user.getDepartment() == null || user.getDepartment().trim().isEmpty()) {
-            throw new ValidationException("Department is required");
-        }
-
-        if (userRepository.existsByEmail(user.getEmail())) {
-            throw new ValidationException("Email already exists");
-        }
-
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-
-        return userRepository.save(user);
+ 
+    if (userRepository.findByEmail(user.getEmail()).isPresent()) {
+        throw new ValidationException("Email already exists");
     }
+
+  
+    if (user.getPassword() == null || user.getPassword().length() < 8) {
+        throw new ValidationException("Password must be at least 8 characters");
+    }
+
+    user.setPassword(passwordEncoder.encode(user.getPassword()));
+    user.setCreatedAt(LocalDateTime.now());
+
+    return userRepository.save(user);
+}
+
 
     @Override
     public User getUser(Long id) {
