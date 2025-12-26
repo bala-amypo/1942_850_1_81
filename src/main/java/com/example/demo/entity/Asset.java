@@ -1,18 +1,30 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
+import lombok.*;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class Asset {
 
-    @Id @GeneratedValue
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String assetTag;
+
     private String assetType;
+
     private String model;
+
     private LocalDate purchaseDate;
+
     private String status;
 
     @ManyToOne
@@ -20,26 +32,11 @@ public class Asset {
 
     private LocalDateTime createdAt;
 
-    public Asset() {}
-
-    public Asset(Long id, String assetTag, String assetType, String model,
-                 LocalDate purchaseDate, String status,
-                 User currentHolder, LocalDateTime createdAt) {
-        this.id = id;
-        this.assetTag = assetTag;
-        this.assetType = assetType;
-        this.model = model;
-        this.purchaseDate = purchaseDate;
-        this.status = status;
-        this.currentHolder = currentHolder;
-        this.createdAt = createdAt;
-    }
-
     @PrePersist
     public void prePersist() {
-        if (status == null) status = "AVAILABLE";
-        if (createdAt == null) createdAt = LocalDateTime.now();
+        if (status == null) {
+            status = "AVAILABLE";
+        }
+        createdAt = LocalDateTime.now();
     }
-
-    // getters & setters
 }
