@@ -3,18 +3,20 @@ package com.example.demo.security;
 import com.example.demo.entity.User;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.stereotype.Component;
 
 import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+@Component  
 public class JwtUtil {
 
     private static final Key KEY =
             Keys.hmacShaKeyFor("mysecretkeymysecretkeymysecretkey12".getBytes());
 
-    private static final long EXPIRATION = 1000 * 60 * 60; 
+    private static final long EXPIRATION = 1000 * 60 * 60; // 1 hour
 
     public String generateToken(Map<String, Object> claims, String subject) {
         return Jwts.builder()
@@ -51,8 +53,7 @@ public class JwtUtil {
     }
 
     public Long extractUserId(String token) {
-        Object id = parseToken(token).get("userId");
-        return Long.valueOf(id.toString());
+        return Long.valueOf(parseToken(token).get("userId").toString());
     }
 
     public boolean isTokenValid(String token, String email) {
