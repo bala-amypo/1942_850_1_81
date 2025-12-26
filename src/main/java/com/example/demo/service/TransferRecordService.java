@@ -7,7 +7,5 @@ public interface TransferRecordService {
 
     TransferRecord createTransfer(Long assetId, TransferRecord record);
 
-    TransferRecord getTransfer(Long id);  
-
     List<TransferRecord> getTransfersForAsset(Long assetId);
 }

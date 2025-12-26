@@ -7,7 +7,5 @@ public interface LifecycleEventService {
 
     LifecycleEvent logEvent(Long assetId, Long userId, LifecycleEvent event);
 
-    LifecycleEvent getEvent(Long id);  
-
     List<LifecycleEvent> getEventsForAsset(Long assetId);
 }
