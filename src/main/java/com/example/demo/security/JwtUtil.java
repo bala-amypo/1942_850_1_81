@@ -10,13 +10,15 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-@Component  
+@Component   // 🔴 REQUIRED so Spring can inject it
 public class JwtUtil {
 
-    private static final Key KEY =
-            Keys.hmacShaKeyFor("mysecretkeymysecretkeymysecretkey12".getBytes());
-
+    private static final String SECRET = "mysecretkeymysecretkeymysecretkey12";
     private static final long EXPIRATION = 1000 * 60 * 60; // 1 hour
+
+    private final Key KEY = Keys.hmacShaKeyFor(SECRET.getBytes());
+
+    /* ================= TOKEN GENERATION ================= */
 
     public String generateToken(Map<String, Object> claims, String subject) {
         return Jwts.builder()
@@ -33,30 +35,38 @@ public class JwtUtil {
         claims.put("userId", user.getId());
         claims.put("email", user.getEmail());
         claims.put("role", user.getRole());
+
         return generateToken(claims, user.getEmail());
     }
 
-    public Claims parseToken(String token) {
+    /* ================= TOKEN PARSING ================= */
+
+    // 🔥 THIS METHOD FIXES getPayload() TEST FAILURES
+    public Jws<Claims> parseToken(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(KEY)
                 .build()
-                .parseClaimsJws(token)
-                .getBody();
+                .parseClaimsJws(token);
     }
 
     public String extractUsername(String token) {
-        return parseToken(token).getSubject();
+        return parseToken(token).getPayload().getSubject();
     }
 
     public String extractRole(String token) {
-        return (String) parseToken(token).get("role");
+        return (String) parseToken(token).getPayload().get("role");
     }
 
     public Long extractUserId(String token) {
-        return Long.valueOf(parseToken(token).get("userId").toString());
+        Object id = parseToken(token).getPayload().get("userId");
+        return id == null ? null : Long.valueOf(id.toString());
     }
 
-    public boolean isTokenValid(String token, String email) {
-        return extractUsername(token).equals(email);
+    public boolean isTokenValid(String token, String username) {
+        try {
+            return extractUsername(token).equals(username);
+        } catch (Exception e) {
+            return false;
+        }
     }
 }

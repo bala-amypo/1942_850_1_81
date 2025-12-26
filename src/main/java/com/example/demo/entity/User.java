@@ -6,8 +6,7 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class User {
@@ -31,9 +30,7 @@ public class User {
 
     @PrePersist
     public void prePersist() {
-        if (role == null) {
-            role = "USER";
-        }
-        createdAt = LocalDateTime.now();
+        if (role == null) role = "USER";
+        if (createdAt == null) createdAt = LocalDateTime.now();
     }
 }
