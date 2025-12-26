@@ -19,6 +19,22 @@ public class JwtUtil {
 
     private final Key KEY = Keys.hmacShaKeyFor(SECRET.getBytes());
 
+    /* ======================================================
+       INNER CLASS (NO NEW FILE)
+       ====================================================== */
+    public static class ParsedToken {
+        private final Claims claims;
+
+        public ParsedToken(Claims claims) {
+            this.claims = claims;
+        }
+
+        // 🔥 THIS IS WHAT TESTS EXPECT
+        public Claims getPayload() {
+            return claims;
+        }
+    }
+
     /* ================= TOKEN GENERATION ================= */
 
     public String generateToken(Map<String, Object> claims, String subject) {
@@ -44,12 +60,14 @@ public class JwtUtil {
 
     /* ================= TOKEN PARSING ================= */
 
-    // 🔥 THIS IS THE KEY CHANGE
-    // Jwt<?, Claims> HAS getPayload()
-    public Jwt<?, Claims> parseToken(String token) {
-        return Jwts.parser()
+    // ✅ RETURN INNER CLASS (NOT Jws / Jwt)
+    public ParsedToken parseToken(String token) {
+        Claims claims = Jwts.parser()
                 .setSigningKey(KEY)
-                .parse(token);
+                .parseClaimsJws(token)
+                .getBody();
+
+        return new ParsedToken(claims);
     }
 
     public String extractUsername(String token) {
