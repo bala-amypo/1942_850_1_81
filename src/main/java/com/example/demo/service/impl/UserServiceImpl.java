@@ -23,16 +23,13 @@ public class UserServiceImpl implements UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    // ================= REGISTER USER =================
     @Override
     public User registerUser(User user) {
 
-        // ✅ t11: DUPLICATE EMAIL VALIDATION
         if (userRepository.findByEmail(user.getEmail()).isPresent()) {
             throw new ValidationException("Email already exists");
         }
 
-        // ✅ PASSWORD VALIDATION
         if (user.getPassword() == null || user.getPassword().length() < 8) {
             throw new ValidationException("Password must be at least 8 characters");
         }
