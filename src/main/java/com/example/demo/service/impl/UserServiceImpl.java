@@ -49,6 +49,14 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() ->
                         new ResourceNotFoundException("User not found"));
     }
+    public User promoteToAdmin(Long userId) {
+    User user = userRepository.findById(userId)
+            .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+    user.setRole("ADMIN");
+    return userRepository.save(user);
+}
+
 
     @Override
     public List<User> getAllUsers() {
