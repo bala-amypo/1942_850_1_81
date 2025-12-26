@@ -18,25 +18,21 @@ public class AssetController {
         this.assetService = assetService;
     }
 
-    // POST /
     @PostMapping
     public Asset createAsset(@RequestBody Asset asset) {
         return assetService.createAsset(asset);
     }
 
-    // GET /
     @GetMapping
     public List<Asset> getAllAssets() {
         return assetService.getAllAssets();
     }
 
-    // GET /{id}
     @GetMapping("/{id}")
     public Asset getAsset(@PathVariable Long id) {
         return assetService.getAsset(id);
     }
 
-    // PUT /status/{id}
     @PutMapping("/status/{id}")
     public Asset updateStatus(@PathVariable Long id,
                               @RequestParam String status) {

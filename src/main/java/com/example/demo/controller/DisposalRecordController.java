@@ -2,12 +2,14 @@ package com.example.demo.controller;
 
 import com.example.demo.entity.DisposalRecord;
 import com.example.demo.service.DisposalRecordService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/disposals")
+@Tag(name = "Disposals")
 public class DisposalRecordController {
 
     private final DisposalRecordService disposalRecordService;
@@ -17,11 +19,9 @@ public class DisposalRecordController {
     }
 
     @PostMapping("/{assetId}")
-    public DisposalRecord createDisposal(
-            @PathVariable Long assetId,
-            @RequestBody DisposalRecord disposal) {
-
-        return disposalRecordService.createDisposal(assetId, disposal);
+    public DisposalRecord createDisposal(@PathVariable Long assetId,
+                                         @RequestBody DisposalRecord record) {
+        return disposalRecordService.createDisposal(assetId, record);
     }
 
     @GetMapping
