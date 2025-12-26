@@ -6,11 +6,12 @@ public class RegisterRequest {
     private String email;
     private String department;
     private String password;
+    private String role;
 
     public RegisterRequest() {}
 
     public RegisterRequest(String fullName, String email,
-                           String department, String password) {
+                           String department, String password, String role) {
         this.fullName = fullName;
         this.email = email;
         this.department = department;
