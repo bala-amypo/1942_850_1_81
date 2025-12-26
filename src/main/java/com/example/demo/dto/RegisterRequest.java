@@ -16,10 +16,12 @@ public class RegisterRequest {
         this.email = email;
         this.department = department;
         this.password = password;
+        this.role = role;
     }
 
     public String getFullName() { return fullName; }
     public String getEmail() { return email; }
     public String getDepartment() { return department; }
     public String getPassword() { return password; }
+    public String getRole() { return role; }
 }
